@@ -12,17 +12,17 @@ Add this to your `~/.bash_aliases` to launch the container from any project dire
 
 ```sh
 dev() {
-  # Running? Exec into it.
+  # Running container for this directory? Exec into it.
   local running
-  running=$(docker ps -q -f ancestor=dev-env | head -1)
+  running=$(docker ps -q -f ancestor=dev-env -f label=dev.workdir="$PWD" | head -1)
   if [ -n "$running" ]; then
     docker exec -it "$running" bash
     return
   fi
 
-  # Stopped? Restart it, then exec.
+  # Stopped container for this directory? Restart it, then exec.
   local stopped
-  stopped=$(docker ps -aq -f ancestor=dev-env -f status=exited | head -1)
+  stopped=$(docker ps -aq -f ancestor=dev-env -f status=exited -f label=dev.workdir="$PWD" | head -1)
   if [ -n "$stopped" ]; then
     docker start "$stopped"
     docker exec -it "$stopped" bash
@@ -32,7 +32,12 @@ dev() {
   # New container (detached), then exec in.
   local args=("$@")
   if [ ${#args[@]} -eq 0 ]; then
-    args=(3000)
+    local port=3000
+    while ss -tln | grep -q ":$port "; do
+      ((port++))
+    done
+    [ "$port" -ne 3000 ] && echo "Port 3000 in use, forwarding port $port"
+    args=("$port")
   fi
   local ports=()
   for port in "${args[@]}"; do
@@ -40,6 +45,7 @@ dev() {
   done
   local id
   id=$(docker run -dit \
+    --label dev.workdir="$PWD" \
     "${ports[@]}" \
     -v "$PWD":/workspace \
     -v "$HOME/.config/helix":/home/dev/.config/helix:ro \
