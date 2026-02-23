@@ -23,7 +23,8 @@ RUN curl -Lo /tmp/helix.deb https://github.com/helix-editor/helix/releases/downl
 
 RUN npm install -g pnpm typescript typescript-language-server vscode-langservers-extracted
 
-RUN useradd -m -s /bin/bash dev \
+RUN userdel -r node \
+    && useradd -m -s /bin/bash -u 1000 dev \
     && echo "dev ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/dev
 
 ENV CLAUDE_CONFIG_DIR=/home/dev/.claude
@@ -33,6 +34,7 @@ RUN mkdir -p /home/dev/.claude /home/dev/.ssh \
 
 COPY .gitconfig /home/dev/.gitconfig
 COPY .bash_aliases /home/dev/.bash_aliases
+COPY ralph.sh /home/dev/ralph.sh
 
 RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/' /home/dev/.bashrc \
     && echo 'export EDITOR=hx' >> /home/dev/.bashrc \
