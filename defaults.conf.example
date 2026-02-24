@@ -20,6 +20,6 @@ CAGE_GIT_PUSH_REMOTES=""
 CAGE_VOLUMES=(
     "$HOME/.config/helix:/home/cage/.config/helix:ro"
     "$HOME/.config/tmux:/home/cage/.config/tmux:ro"
-    "cage-config:/home/cage/.claude"
-    "cage-ssh:/home/cage/.ssh"
+    "${USER}-cage-config:/home/cage/.claude"
+    "${USER}-cage-ssh:/home/cage/.ssh"
 )

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-IMAGE="${CAGE_IMAGE:-cage}"
+IMAGE="${CAGE_IMAGE:-${USER}-cage}"
 
 # --- Locate config relative to this script ---
 
@@ -17,8 +17,8 @@ CAGE_GIT_PUSH_REMOTES=""
 CAGE_VOLUMES=(
     "$HOME/.config/helix:/home/cage/.config/helix:ro"
     "$HOME/.config/tmux:/home/cage/.config/tmux:ro"
-    "cage-config:/home/cage/.claude"
-    "cage-ssh:/home/cage/.ssh"
+    "${USER}-cage-config:/home/cage/.claude"
+    "${USER}-cage-ssh:/home/cage/.ssh"
 )
 
 # shellcheck source=/dev/null

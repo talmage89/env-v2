@@ -1,4 +1,4 @@
-IMAGE := cage
+IMAGE := $(USER)-cage
 
 build:
 	./scripts/build.sh

@@ -62,8 +62,8 @@ The container runs in the background and survives broken pipes and terminal clos
 
 - **`exit`** or close terminal — leaves the container running
 - **`cage`** — opens a new shell in the running container
-- **`docker stop $(docker ps -q -f ancestor=cage)`** — stop the container
-- **`docker rm $(docker ps -aq -f ancestor=cage)`** — remove a stopped container
+- **`docker stop $(docker ps -q -f ancestor=$USER-cage)`** — stop the container
+- **`docker rm $(docker ps -aq -f ancestor=$USER-cage)`** — remove a stopped container
 
 ## Repository Structure
 

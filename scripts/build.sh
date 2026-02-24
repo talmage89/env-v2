@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
-IMAGE="${CAGE_IMAGE:-cage}"
+IMAGE="${CAGE_IMAGE:-${USER}-cage}"
 USER_DOCKERFILE="$REPO_DIR/user.Dockerfile"
 
 if [[ -f "$USER_DOCKERFILE" ]]; then
