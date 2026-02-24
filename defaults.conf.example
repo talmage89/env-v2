@@ -15,6 +15,12 @@ CAGE_NETWORK="claude"
 # Example: CAGE_GIT_PUSH_REMOTES="gitlab.com/myorg/myrepo"
 CAGE_GIT_PUSH_REMOTES=""
 
+# Cached directories: workspace-relative paths stored in named Docker volumes
+# instead of the bind mount. Avoids slow file watching on macOS (Colima/virtiofs).
+# Each gets a named volume scoped to the project directory (by path hash).
+# Example: CAGE_CACHED_DIRS=("node_modules" ".next" "dist")
+CAGE_CACHED_DIRS=()
+
 # Volume mounts (bash array of Docker -v strings).
 # The workspace ($PWD:/workspace) is always mounted automatically.
 CAGE_VOLUMES=(

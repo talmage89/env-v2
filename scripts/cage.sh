@@ -14,6 +14,7 @@ CONFIG_FILE="$REPO_DIR/defaults.conf"
 CAGE_PORTS=""
 CAGE_NETWORK="claude"
 CAGE_GIT_PUSH_REMOTES=""
+CAGE_CACHED_DIRS=()
 CAGE_VOLUMES=(
     "$HOME/.config/helix:/home/cage/.config/helix:ro"
     "$HOME/.config/tmux:/home/cage/.config/tmux:ro"
@@ -102,6 +103,15 @@ done
 for vol in "${CAGE_VOLUMES[@]}"; do
     RUN_ARGS+=(-v "$vol")
 done
+
+# Cached dirs: overlay named volumes on workspace paths for filesystem performance
+if [[ ${#CAGE_CACHED_DIRS[@]} -gt 0 ]]; then
+    PROJECT_HASH=$(echo -n "$PWD" | shasum | cut -c1-8)
+    for dir in "${CAGE_CACHED_DIRS[@]}"; do
+        vol_name="${USER}-cage-${PROJECT_HASH}-$(echo "$dir" | tr '/' '-')"
+        RUN_ARGS+=(-v "$vol_name:/workspace/$dir")
+    done
+fi
 
 # Git push remote restriction
 if [[ -n "$CAGE_GIT_PUSH_REMOTES" ]]; then
