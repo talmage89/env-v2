@@ -33,10 +33,12 @@ Edit `defaults.conf` to configure:
 | Variable | Description | Default |
 |---|---|---|
 | `CAGE_PORTS` | Ports to forward (space-separated) | (none) |
+| `CAGE_GIT_NAME` | Git author/committer name | (unset) |
+| `CAGE_GIT_EMAIL` | Git author/committer email | (unset) |
 | `CAGE_NETWORK` | Network profile | `claude` |
-| `CAGE_GIT_PUSH_REMOTES` | Allowed git push URL patterns (space-separated) | (unrestricted) |
+| `CAGE_GIT_PUSH_REMOTES` | Allowed git push URL patterns | (unrestricted) |
 | `CAGE_CACHED_DIRS` | Workspace dirs stored in native volumes (bash array) | (none) |
-| `CAGE_VOLUMES` | Volume mounts (bash array) | helix, tmux, claude config, ssh |
+| `CAGE_VOLUMES` | Volume mounts (bash array) | tmux, claude config, ssh |
 
 ### Custom Dockerfile Extensions
 
@@ -90,7 +92,7 @@ Set `CAGE_GIT_PUSH_REMOTES` in `defaults.conf` to restrict which remotes `git pu
 CAGE_GIT_PUSH_REMOTES="gitlab.com/myorg/myrepo"
 ```
 
-A global pre-push hook blocks pushes to any remote URL not matching a configured pattern. Leave empty to allow all remotes.
+A global pre-push hook blocks pushes to any remote URL not matching a configured pattern. Leave empty to allow all remotes. Only relevant for `standard` or `full` profiles — `claude` and `none` block git remote access at the network level.
 
 ## Lifecycle
 

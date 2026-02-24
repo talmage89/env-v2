@@ -1,9 +1,4 @@
-[user]
-	name = cage
-	email = cage@localhost
-
 [core]
-	editor = hx
 	hooksPath = ~/.githooks
 
 [init]

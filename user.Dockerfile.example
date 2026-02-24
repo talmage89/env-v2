@@ -1,7 +1,7 @@
 # Copy this file to user.Dockerfile and customize.
 # These instructions are injected into the Dockerfile during build,
-# after base system setup (as root, before dev user creation).
+# after base system setup (as root, before cage user creation).
 #
-# Examples:
-# RUN apt update && apt install -y postgresql-client
-# RUN npm install -g @angular/cli
+# Example: install helix editor and set as default
+# RUN apt update && apt install -y helix
+# ENV EDITOR=hx VISUAL=hx

@@ -12,11 +12,12 @@ CONFIG_FILE="$REPO_DIR/defaults.conf"
 # --- Defaults (overridden by config file if present) ---
 
 CAGE_PORTS=""
+CAGE_GIT_NAME=""
+CAGE_GIT_EMAIL=""
 CAGE_NETWORK="claude"
 CAGE_GIT_PUSH_REMOTES=""
 CAGE_CACHED_DIRS=()
 CAGE_VOLUMES=(
-    "$HOME/.config/helix:/home/cage/.config/helix:ro"
     "$HOME/.config/tmux:/home/cage/.config/tmux:ro"
     "${USER}-cage-config:/home/cage/.claude"
     "${USER}-cage-ssh:/home/cage/.ssh"
@@ -111,6 +112,14 @@ if [[ ${#CAGE_CACHED_DIRS[@]} -gt 0 ]]; then
         vol_name="${USER}-cage-${PROJECT_HASH}-$(echo "$dir" | tr '/' '-')"
         RUN_ARGS+=(-v "$vol_name:/workspace/$dir")
     done
+fi
+
+# Git identity
+if [[ -n "$CAGE_GIT_NAME" ]]; then
+    RUN_ARGS+=(-e "GIT_AUTHOR_NAME=$CAGE_GIT_NAME" -e "GIT_COMMITTER_NAME=$CAGE_GIT_NAME")
+fi
+if [[ -n "$CAGE_GIT_EMAIL" ]]; then
+    RUN_ARGS+=(-e "GIT_AUTHOR_EMAIL=$CAGE_GIT_EMAIL" -e "GIT_COMMITTER_EMAIL=$CAGE_GIT_EMAIL")
 fi
 
 # Git push remote restriction

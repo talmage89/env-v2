@@ -18,10 +18,6 @@ RUN apt update && apt install -y \
     && sed -i 's/# en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen \
     && locale-gen
 
-RUN curl -Lo /tmp/helix.deb https://github.com/helix-editor/helix/releases/download/25.07/helix_25.7.0-1_amd64.deb \
-    && dpkg -i /tmp/helix.deb \
-    && rm /tmp/helix.deb
-
 RUN npm install -g pnpm typescript typescript-language-server vscode-langservers-extracted
 
 # === USER EXTENSIONS ===
@@ -39,8 +35,6 @@ RUN mkdir -p /home/cage/.claude /home/cage/.ssh \
 COPY config/ /home/cage/
 
 RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/' /home/cage/.bashrc \
-    && echo 'export EDITOR=hx' >> /home/cage/.bashrc \
-    && echo 'export VISUAL=hx' >> /home/cage/.bashrc \
     && echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/cage/.bashrc \
     && echo '[ -f ~/.bash_aliases ] && . ~/.bash_aliases' >> /home/cage/.bashrc \
     && echo 'if [ -z "$SSH_AUTH_SOCK" ]; then eval "$(ssh-agent -s)" > /dev/null; ssh-add ~/.ssh/id_* 2>/dev/null; fi' >> /home/cage/.bashrc
