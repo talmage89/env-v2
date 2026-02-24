@@ -39,7 +39,6 @@ RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/' /home/cage/.bashr
     && echo '[ -f ~/.bash_aliases ] && . ~/.bash_aliases' >> /home/cage/.bashrc \
     && echo 'if [ -z "$SSH_AUTH_SOCK" ]; then eval "$(ssh-agent -s)" > /dev/null; ssh-add ~/.ssh/id_* 2>/dev/null; fi' >> /home/cage/.bashrc
 
-ENV TMUX_THEME="#ff8c00"
 ENV TERM=xterm-256color
 ENV COLORTERM=truecolor
 ENV LANG=en_US.UTF-8
