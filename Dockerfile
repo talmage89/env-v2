@@ -18,7 +18,7 @@ RUN apt update && apt install -y \
     && sed -i 's/# en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen \
     && locale-gen
 
-RUN npm install -g pnpm typescript typescript-language-server vscode-langservers-extracted
+RUN npm install -g pnpm
 
 # === USER EXTENSIONS ===
 # === END USER EXTENSIONS ===
