@@ -2,6 +2,8 @@
 
 Containerized development environment with Claude Code, configurable network isolation, and user-extensible Docker builds.
 
+Image and volume names are prefixed with `$USER` so multiple users on the same machine don't conflict.
+
 ## Setup
 
 ### Build
@@ -9,6 +11,8 @@ Containerized development environment with Claude Code, configurable network iso
 ```sh
 make build
 ```
+
+This produces a Docker image named `$USER-cage`.
 
 ### Shell Alias
 
@@ -24,7 +28,14 @@ alias cage='/path/to/env-v2/scripts/cage.sh'
 cp defaults.conf.example defaults.conf
 ```
 
-Edit `defaults.conf` to set default ports, network profile, and volume mounts.
+Edit `defaults.conf` to configure:
+
+| Variable | Description | Default |
+|---|---|---|
+| `CAGE_PORTS` | Ports to forward (space-separated) | (none) |
+| `CAGE_NETWORK` | Network profile | `claude` |
+| `CAGE_GIT_PUSH_REMOTES` | Allowed git push URL patterns (space-separated) | (unrestricted) |
+| `CAGE_VOLUMES` | Volume mounts (bash array) | helix, tmux, claude config, ssh |
 
 ### Custom Dockerfile Extensions
 
@@ -32,7 +43,7 @@ Edit `defaults.conf` to set default ports, network profile, and volume mounts.
 cp user.Dockerfile.example user.Dockerfile
 ```
 
-Add any `RUN`, `COPY`, or `ENV` instructions. These are injected into the Dockerfile during build (as root, before cage user creation) so you can install additional packages or tools.
+Add any `RUN`, `COPY`, or `ENV` instructions. These are injected into the Dockerfile during build (as root, before user creation) so you can install additional packages or tools.
 
 ## Usage
 
@@ -40,21 +51,35 @@ Add any `RUN`, `COPY`, or `ENV` instructions. These are injected into the Docker
 cage                    # start or attach (config defaults)
 cage 8080 3000          # forward specific ports
 cage --net none         # completely isolated (no network)
-cage --net claude       # Claude Code API only
+cage --net claude       # Claude Code API only (default)
 cage --net standard     # Claude + npm + GitLab
 cage --net full 8080    # unrestricted + port forwarding
 ```
 
 ## Network Profiles
 
-| Profile      | Access                                          |
-|--------------|-------------------------------------------------|
-| `none`       | Completely isolated (no network stack)           |
-| `claude`     | Claude Code API only                             |
-| `standard`   | Claude + npm/yarn + GitLab                       |
-| `full`       | Unrestricted (default)                           |
+Network isolation prevents a prompt-injected agent from exfiltrating code to the public internet. The default profile (`claude`) allows only Anthropic API access.
+
+| Profile    | Access                                |
+|------------|---------------------------------------|
+| `none`     | Completely isolated (no network stack)|
+| `claude`   | Anthropic API only (default)          |
+| `standard` | Claude + npm/yarn + GitLab            |
+| `full`     | Unrestricted                          |
 
 Profiles are defined in `network/profiles/` and are composable via `include` directives. Adding a new profile is as simple as creating a new `.profile` file.
+
+Restricted profiles use iptables rules applied at container startup. IPv6 outbound is blocked to prevent leaks.
+
+## Git Push Restriction
+
+Set `CAGE_GIT_PUSH_REMOTES` in `defaults.conf` to restrict which remotes `git push` can reach inside the container:
+
+```sh
+CAGE_GIT_PUSH_REMOTES="gitlab.com/myorg/myrepo"
+```
+
+A global pre-push hook blocks pushes to any remote URL not matching a configured pattern. Leave empty to allow all remotes.
 
 ## Lifecycle
 
@@ -71,7 +96,7 @@ The container runs in the background and survives broken pipes and terminal clos
 ├── scripts/           host-side scripts (cage.sh, build.sh)
 ├── config/            copied to /home/cage/ in the container
 ├── network/
-│   ├── profiles/      network profile definitions
+│   ├── profiles/      network profile definitions (.profile files)
 │   ├── entrypoint.sh  container entrypoint (applies firewall)
 │   └── apply-firewall.sh
 ├── defaults.conf      local config (gitignored)
