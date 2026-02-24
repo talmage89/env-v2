@@ -7,5 +7,5 @@ alias dc="docker compose"
 alias t="tmux attach || tmux"
 alias pbcopy='printf "\033]52;c;$(base64)\a"'
 alias claude-dangerous='claude --dangerously-skip-permissions'
-alias ralph='~/ralph.sh'
+alias ralph='~/.scripts/ralph'
 alias ralph-tail='tail -f ~/ralph/latest/output.txt'

@@ -1,69 +1,62 @@
 # dev env
 
-## Build
+Containerized development environment with Claude Code, configurable network isolation, and user-extensible Docker builds.
+
+## Setup
+
+### Build
 
 ```sh
-docker build -t dev-env .
+make build
 ```
 
-## Shell Function
+### Shell Alias
 
-Add this to your `~/.bash_aliases` to launch the container from any project directory:
+Add to `~/.bash_aliases` or `~/.bashrc`:
 
 ```sh
-dev() {
-  # Running container for this directory? Exec into it.
-  local running
-  running=$(docker ps -q -f ancestor=dev-env -f label=dev.workdir="$PWD" | head -1)
-  if [ -n "$running" ]; then
-    docker exec -it "$running" bash
-    return
-  fi
-
-  # Stopped container for this directory? Restart it, then exec.
-  local stopped
-  stopped=$(docker ps -aq -f ancestor=dev-env -f status=exited -f label=dev.workdir="$PWD" | head -1)
-  if [ -n "$stopped" ]; then
-    docker start "$stopped"
-    docker exec -it "$stopped" bash
-    return
-  fi
-
-  # New container (detached), then exec in.
-  local args=("$@")
-  if [ ${#args[@]} -eq 0 ]; then
-    local port=3000
-    while ss -tln | grep -q ":$port "; do
-      ((port++))
-    done
-    [ "$port" -ne 3000 ] && echo "Port 3000 in use, forwarding port $port"
-    args=("$port")
-  fi
-  local ports=()
-  for port in "${args[@]}"; do
-    ports+=(-p "$port:$port")
-  done
-  local id
-  id=$(docker run -dit \
-    --label dev.workdir="$PWD" \
-    "${ports[@]}" \
-    -v "$PWD":/workspace \
-    -v "$HOME/.config/helix":/home/dev/.config/helix:ro \
-    -v "$HOME/.config/tmux":/home/dev/.config/tmux:ro \
-    -v claude-config:/home/dev/.claude \
-    -v claude-ssh:/home/dev/.ssh \
-    dev-env)
-  docker exec -it "$id" bash
-}
+alias dev='/path/to/env-v2/scripts/dev.sh'
 ```
+
+### Configuration
+
+```sh
+cp defaults.conf.example defaults.conf
+```
+
+Edit `defaults.conf` to set default ports, network profile, and volume mounts.
+
+### Custom Dockerfile Extensions
+
+```sh
+cp user.Dockerfile.example user.Dockerfile
+```
+
+Add any `RUN`, `COPY`, or `ENV` instructions. These are injected into the Dockerfile during build (as root, before dev user creation) so you can install additional packages or tools.
 
 ## Usage
 
 ```sh
-dev              # exec into running/stopped container, or start with port 3000 forwarded
-dev 5173         # start with port 5173 instead of the default
-dev 3000 5173    # start with multiple ports forwarded
+dev                    # start or attach (config defaults)
+dev 8080 3000          # forward specific ports
+dev --net none         # completely isolated (no network)
+dev --net claude       # Anthropic API only
+dev --net claude-npm   # Claude + npm/yarn registries
+dev --net standard     # Claude + npm + GitHub + PyPI
+dev --net full 8080    # unrestricted + port forwarding
 ```
+
+## Network Profiles
+
+| Profile      | Access                                          |
+|--------------|-------------------------------------------------|
+| `none`       | Completely isolated (no network stack)           |
+| `claude`     | Anthropic API only                               |
+| `claude-npm` | Claude + npm/yarn registries                     |
+| `standard`   | Claude + npm + GitHub + PyPI                     |
+| `full`       | Unrestricted (default)                           |
+
+Profiles are defined in `network/profiles/` and are composable via `include` directives. Adding a new profile is as simple as creating a new `.profile` file.
 
 ## Lifecycle
 
@@ -71,5 +64,18 @@ The container runs in the background and survives broken pipes and terminal clos
 
 - **`exit`** or close terminal — leaves the container running
 - **`dev`** — opens a new shell in the running container
-- **`docker stop $(docker ps -q -f ancestor=dev-env)`** — stop the container when done
+- **`docker stop $(docker ps -q -f ancestor=dev-env)`** — stop the container
 - **`docker rm $(docker ps -aq -f ancestor=dev-env)`** — remove a stopped container
+
+## Repository Structure
+
+```
+├── scripts/           host-side scripts (dev.sh, build.sh)
+├── config/            copied to /home/dev/ in the container
+├── network/
+│   ├── profiles/      network profile definitions
+│   ├── entrypoint.sh  container entrypoint (applies firewall)
+│   └── apply-firewall.sh
+├── defaults.conf      local config (gitignored)
+└── user.Dockerfile    personal Dockerfile extensions (gitignored)
+```

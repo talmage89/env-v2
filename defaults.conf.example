@@ -1,0 +1,19 @@
+# defaults.conf - Local configuration for the dev environment.
+# Copy to defaults.conf and customize. This file is gitignored.
+
+# Ports to forward when no ports are given on the command line.
+# Space-separated list. Leave empty for no port forwarding.
+# Example: DEV_PORTS="3000 5173"
+DEV_PORTS=""
+
+# Network profile: none | claude | claude-npm | standard | full
+DEV_NETWORK="full"
+
+# Volume mounts (bash array of Docker -v strings).
+# The workspace ($PWD:/workspace) is always mounted automatically.
+DEV_VOLUMES=(
+    "$HOME/.config/helix:/home/dev/.config/helix:ro"
+    "$HOME/.config/tmux:/home/dev/.config/tmux:ro"
+    "claude-config:/home/dev/.claude"
+    "claude-ssh:/home/dev/.ssh"
+)

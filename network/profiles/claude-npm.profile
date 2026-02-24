@@ -1,0 +1,2 @@
+include claude
+include npm

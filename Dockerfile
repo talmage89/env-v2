@@ -6,6 +6,7 @@ RUN apt update && apt install -y \
     curl \
     git \
     gnupg \
+    iptables \
     jq \
     less \
     locales \
@@ -23,6 +24,9 @@ RUN curl -Lo /tmp/helix.deb https://github.com/helix-editor/helix/releases/downl
 
 RUN npm install -g pnpm typescript typescript-language-server vscode-langservers-extracted
 
+# === USER EXTENSIONS ===
+# === END USER EXTENSIONS ===
+
 RUN userdel -r node \
     && useradd -m -s /bin/bash -u 1000 dev \
     && echo "dev ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/dev
@@ -32,9 +36,9 @@ ENV CLAUDE_CONFIG_DIR=/home/dev/.claude
 RUN mkdir -p /home/dev/.claude /home/dev/.ssh \
     && chown -R dev:dev /home/dev/.claude /home/dev/.ssh
 
-COPY .gitconfig /home/dev/.gitconfig
-COPY .bash_aliases /home/dev/.bash_aliases
-COPY ralph.sh /home/dev/ralph.sh
+COPY config/.gitconfig /home/dev/.gitconfig
+COPY config/.bash_aliases /home/dev/.bash_aliases
+COPY config/.scripts/ /home/dev/.scripts/
 
 RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/' /home/dev/.bashrc \
     && echo 'export EDITOR=hx' >> /home/dev/.bashrc \
@@ -49,6 +53,11 @@ ENV COLORTERM=truecolor
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
+COPY network/profiles/ /etc/dev-network/profiles/
+COPY network/apply-firewall.sh /etc/dev-network/apply-firewall.sh
+COPY network/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /etc/dev-network/apply-firewall.sh /usr/local/bin/entrypoint.sh
+
 RUN mkdir -p /workspace && chown dev:dev /workspace
 
 USER dev
@@ -58,4 +67,5 @@ ENV PATH="/home/dev/.local/bin:${PATH}"
 
 WORKDIR /workspace
 
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["bash"]

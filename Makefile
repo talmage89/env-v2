@@ -1,7 +1,7 @@
 IMAGE := dev-env
 
 build:
-	docker build -t $(IMAGE) .
+	./scripts/build.sh
 
 clean:
 	-docker rmi $(IMAGE)
