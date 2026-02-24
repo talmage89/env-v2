@@ -1,4 +1,4 @@
-# dev env
+# cage
 
 Containerized development environment with Claude Code, configurable network isolation, and user-extensible Docker builds.
 
@@ -15,7 +15,7 @@ make build
 Add to `~/.bash_aliases` or `~/.bashrc`:
 
 ```sh
-alias dev='/path/to/env-v2/scripts/dev.sh'
+alias cage='/path/to/env-v2/scripts/cage.sh'
 ```
 
 ### Configuration
@@ -32,17 +32,17 @@ Edit `defaults.conf` to set default ports, network profile, and volume mounts.
 cp user.Dockerfile.example user.Dockerfile
 ```
 
-Add any `RUN`, `COPY`, or `ENV` instructions. These are injected into the Dockerfile during build (as root, before dev user creation) so you can install additional packages or tools.
+Add any `RUN`, `COPY`, or `ENV` instructions. These are injected into the Dockerfile during build (as root, before cage user creation) so you can install additional packages or tools.
 
 ## Usage
 
 ```sh
-dev                    # start or attach (config defaults)
-dev 8080 3000          # forward specific ports
-dev --net none         # completely isolated (no network)
-dev --net claude       # Claude Code API only
-dev --net standard     # Claude + npm + GitLab
-dev --net full 8080    # unrestricted + port forwarding
+cage                    # start or attach (config defaults)
+cage 8080 3000          # forward specific ports
+cage --net none         # completely isolated (no network)
+cage --net claude       # Claude Code API only
+cage --net standard     # Claude + npm + GitLab
+cage --net full 8080    # unrestricted + port forwarding
 ```
 
 ## Network Profiles
@@ -61,15 +61,15 @@ Profiles are defined in `network/profiles/` and are composable via `include` dir
 The container runs in the background and survives broken pipes and terminal closures.
 
 - **`exit`** or close terminal — leaves the container running
-- **`dev`** — opens a new shell in the running container
-- **`docker stop $(docker ps -q -f ancestor=dev-env)`** — stop the container
-- **`docker rm $(docker ps -aq -f ancestor=dev-env)`** — remove a stopped container
+- **`cage`** — opens a new shell in the running container
+- **`docker stop $(docker ps -q -f ancestor=cage)`** — stop the container
+- **`docker rm $(docker ps -aq -f ancestor=cage)`** — remove a stopped container
 
 ## Repository Structure
 
 ```
-├── scripts/           host-side scripts (dev.sh, build.sh)
-├── config/            copied to /home/dev/ in the container
+├── scripts/           host-side scripts (cage.sh, build.sh)
+├── config/            copied to /home/cage/ in the container
 ├── network/
 │   ├── profiles/      network profile definitions
 │   ├── entrypoint.sh  container entrypoint (applies firewall)

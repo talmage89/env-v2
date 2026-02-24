@@ -4,7 +4,7 @@ set -euo pipefail
 # apply-firewall.sh - Resolve a network profile and apply iptables rules.
 # Called by entrypoint.sh when a restricted network profile is active.
 
-PROFILE_DIR="/etc/dev-network/profiles"
+PROFILE_DIR="/etc/cage-network/profiles"
 PROFILE_NAME="${1:?Usage: apply-firewall.sh <profile-name>}"
 
 log() { echo "[firewall] $*"; }

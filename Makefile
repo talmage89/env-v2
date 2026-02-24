@@ -1,4 +1,4 @@
-IMAGE := dev-env
+IMAGE := cage
 
 build:
 	./scripts/build.sh

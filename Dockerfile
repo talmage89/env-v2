@@ -28,22 +28,22 @@ RUN npm install -g pnpm typescript typescript-language-server vscode-langservers
 # === END USER EXTENSIONS ===
 
 RUN userdel -r node \
-    && useradd -m -s /bin/bash -u 1000 dev \
-    && echo "dev ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/dev
+    && useradd -m -s /bin/bash -u 1000 cage \
+    && echo "cage ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/cage
 
-ENV CLAUDE_CONFIG_DIR=/home/dev/.claude
+ENV CLAUDE_CONFIG_DIR=/home/cage/.claude
 
-RUN mkdir -p /home/dev/.claude /home/dev/.ssh \
-    && chown -R dev:dev /home/dev/.claude /home/dev/.ssh
+RUN mkdir -p /home/cage/.claude /home/cage/.ssh \
+    && chown -R cage:cage /home/cage/.claude /home/cage/.ssh
 
-COPY config/ /home/dev/
+COPY config/ /home/cage/
 
-RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/' /home/dev/.bashrc \
-    && echo 'export EDITOR=hx' >> /home/dev/.bashrc \
-    && echo 'export VISUAL=hx' >> /home/dev/.bashrc \
-    && echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/dev/.bashrc \
-    && echo '[ -f ~/.bash_aliases ] && . ~/.bash_aliases' >> /home/dev/.bashrc \
-    && echo 'if [ -z "$SSH_AUTH_SOCK" ]; then eval "$(ssh-agent -s)" > /dev/null; ssh-add ~/.ssh/id_* 2>/dev/null; fi' >> /home/dev/.bashrc
+RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/' /home/cage/.bashrc \
+    && echo 'export EDITOR=hx' >> /home/cage/.bashrc \
+    && echo 'export VISUAL=hx' >> /home/cage/.bashrc \
+    && echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/cage/.bashrc \
+    && echo '[ -f ~/.bash_aliases ] && . ~/.bash_aliases' >> /home/cage/.bashrc \
+    && echo 'if [ -z "$SSH_AUTH_SOCK" ]; then eval "$(ssh-agent -s)" > /dev/null; ssh-add ~/.ssh/id_* 2>/dev/null; fi' >> /home/cage/.bashrc
 
 ENV TMUX_THEME="#ff8c00"
 ENV TERM=xterm-256color
@@ -51,17 +51,17 @@ ENV COLORTERM=truecolor
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
-COPY network/profiles/ /etc/dev-network/profiles/
-COPY network/apply-firewall.sh /etc/dev-network/apply-firewall.sh
+COPY network/profiles/ /etc/cage-network/profiles/
+COPY network/apply-firewall.sh /etc/cage-network/apply-firewall.sh
 COPY network/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /etc/dev-network/apply-firewall.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /etc/cage-network/apply-firewall.sh /usr/local/bin/entrypoint.sh
 
-RUN mkdir -p /workspace && chown dev:dev /workspace
+RUN mkdir -p /workspace && chown cage:cage /workspace
 
-USER dev
+USER cage
 
 RUN curl -fsSL https://claude.ai/install.sh | bash
-ENV PATH="/home/dev/.local/bin:${PATH}"
+ENV PATH="/home/cage/.local/bin:${PATH}"
 
 WORKDIR /workspace
 

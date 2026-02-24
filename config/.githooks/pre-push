@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
 # Global pre-push hook: block pushes to disallowed remotes.
-# Configured via DEV_GIT_PUSH_REMOTES env var (space-separated URL patterns).
+# Configured via CAGE_GIT_PUSH_REMOTES env var (space-separated URL patterns).
 # If unset or empty, all pushes are allowed.
 
 REMOTE_URL="$2"
 
-[[ -z "${DEV_GIT_PUSH_REMOTES:-}" ]] && exit 0
+[[ -z "${CAGE_GIT_PUSH_REMOTES:-}" ]] && exit 0
 
-for pattern in $DEV_GIT_PUSH_REMOTES; do
+for pattern in $CAGE_GIT_PUSH_REMOTES; do
     if [[ "$REMOTE_URL" == *"$pattern"* ]]; then
         exit 0
     fi
 done
 
 echo "pre-push: blocked push to $REMOTE_URL"
-echo "allowed remotes: $DEV_GIT_PUSH_REMOTES"
+echo "allowed remotes: $CAGE_GIT_PUSH_REMOTES"
 exit 1
