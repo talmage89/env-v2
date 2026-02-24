@@ -67,9 +67,12 @@ iptables -A OUTPUT -o lo -j ACCEPT
 # Allow established/related connections
 iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 
-# Allow Docker embedded DNS
-iptables -A OUTPUT -d 127.0.0.11 -p udp --dport 53 -j ACCEPT
-iptables -A OUTPUT -d 127.0.0.11 -p tcp --dport 53 -j ACCEPT
+# Allow DNS (read nameservers from resolv.conf — address varies by Docker network type)
+while read -r _ ns _; do
+    iptables -A OUTPUT -d "$ns" -p udp --dport 53 -j ACCEPT
+    iptables -A OUTPUT -d "$ns" -p tcp --dport 53 -j ACCEPT
+    log "allow dns $ns"
+done < <(grep '^nameserver' /etc/resolv.conf)
 
 # Process allow rules
 for rule in "${ALLOW_RULES[@]}"; do
@@ -85,8 +88,8 @@ for rule in "${ALLOW_RULES[@]}"; do
     done
 done
 
-# Default deny
-iptables -A OUTPUT -j DROP
+# Default deny (REJECT so blocked connections fail fast instead of hanging)
+iptables -A OUTPUT -j REJECT
 
 # Block all IPv6 outbound to prevent leaks
 ip6tables -P OUTPUT DROP 2>/dev/null || true

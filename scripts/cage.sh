@@ -112,6 +112,7 @@ if [[ ${#CAGE_CACHED_DIRS[@]} -gt 0 ]]; then
         vol_name="${USER}-cage-${PROJECT_HASH}-$(echo "$dir" | tr '/' '-')"
         RUN_ARGS+=(-v "$vol_name:/workspace/$dir")
     done
+    RUN_ARGS+=(-e "CAGE_CACHED_DIRS=${CAGE_CACHED_DIRS[*]}")
 fi
 
 # Git identity

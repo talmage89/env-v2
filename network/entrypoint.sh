@@ -8,4 +8,11 @@ if [[ -n "${CAGE_NETWORK_PROFILE:-}" && "$CAGE_NETWORK_PROFILE" != "full" ]]; th
     sudo /etc/cage-network/apply-firewall.sh "$CAGE_NETWORK_PROFILE"
 fi
 
+# Fix ownership on cached dir volumes (Docker creates them as root)
+if [[ -n "${CAGE_CACHED_DIRS:-}" ]]; then
+    for dir in $CAGE_CACHED_DIRS; do
+        [[ -d "/workspace/$dir" ]] && sudo chown cage:cage "/workspace/$dir"
+    done
+fi
+
 exec "$@"
