@@ -30,6 +30,7 @@ CAGE_CACHED_DIRS=()
 # Volume mounts (bash array of Docker -v strings).
 # The workspace ($PWD:/workspace) is always mounted automatically.
 CAGE_VOLUMES=(
+    "$HOME/.config/helix:/home/cage/.config/helix:ro"
     "$HOME/.config/tmux:/home/cage/.config/tmux:ro"
     "${USER}-cage-config:/home/cage/.claude"
     "${USER}-cage-ssh:/home/cage/.ssh"
