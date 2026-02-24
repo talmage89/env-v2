@@ -12,6 +12,8 @@ CAGE_NETWORK="claude"
 # Allowed git push remotes (space-separated URL patterns).
 # Pushes to any remote not matching a pattern are blocked.
 # Leave empty to allow all remotes.
+# Note: only relevant for standard or full profiles — claude and none
+# block git remote access at the network level.
 # Example: CAGE_GIT_PUSH_REMOTES="gitlab.com/myorg/myrepo"
 CAGE_GIT_PUSH_REMOTES=""
 
