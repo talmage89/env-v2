@@ -40,9 +40,8 @@ Add any `RUN`, `COPY`, or `ENV` instructions. These are injected into the Docker
 dev                    # start or attach (config defaults)
 dev 8080 3000          # forward specific ports
 dev --net none         # completely isolated (no network)
-dev --net claude       # Anthropic API only
-dev --net claude-npm   # Claude + npm/yarn registries
-dev --net standard     # Claude + npm + GitHub + PyPI
+dev --net claude       # Claude Code API only
+dev --net standard     # Claude + npm + GitLab
 dev --net full 8080    # unrestricted + port forwarding
 ```
 
@@ -51,9 +50,8 @@ dev --net full 8080    # unrestricted + port forwarding
 | Profile      | Access                                          |
 |--------------|-------------------------------------------------|
 | `none`       | Completely isolated (no network stack)           |
-| `claude`     | Anthropic API only                               |
-| `claude-npm` | Claude + npm/yarn registries                     |
-| `standard`   | Claude + npm + GitHub + PyPI                     |
+| `claude`     | Claude Code API only                             |
+| `standard`   | Claude + npm/yarn + GitLab                       |
 | `full`       | Unrestricted (default)                           |
 
 Profiles are defined in `network/profiles/` and are composable via `include` directives. Adding a new profile is as simple as creating a new `.profile` file.

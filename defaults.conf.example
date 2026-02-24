@@ -6,8 +6,14 @@
 # Example: DEV_PORTS="3000 5173"
 DEV_PORTS=""
 
-# Network profile: none | claude | claude-npm | standard | full
-DEV_NETWORK="full"
+# Network profile: none | claude | standard | full
+DEV_NETWORK="claude"
+
+# Allowed git push remotes (space-separated URL patterns).
+# Pushes to any remote not matching a pattern are blocked.
+# Leave empty to allow all remotes.
+# Example: DEV_GIT_PUSH_REMOTES="gitlab.com/myorg/myrepo"
+DEV_GIT_PUSH_REMOTES=""
 
 # Volume mounts (bash array of Docker -v strings).
 # The workspace ($PWD:/workspace) is always mounted automatically.

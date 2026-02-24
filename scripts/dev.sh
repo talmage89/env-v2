@@ -12,7 +12,8 @@ CONFIG_FILE="$REPO_DIR/defaults.conf"
 # --- Defaults (overridden by config file if present) ---
 
 DEV_PORTS=""
-DEV_NETWORK="full"
+DEV_NETWORK="claude"
+DEV_GIT_PUSH_REMOTES=""
 DEV_VOLUMES=(
     "$HOME/.config/helix:/home/dev/.config/helix:ro"
     "$HOME/.config/tmux:/home/dev/.config/tmux:ro"
@@ -101,6 +102,11 @@ done
 for vol in "${DEV_VOLUMES[@]}"; do
     RUN_ARGS+=(-v "$vol")
 done
+
+# Git push remote restriction
+if [[ -n "$DEV_GIT_PUSH_REMOTES" ]]; then
+    RUN_ARGS+=(-e "DEV_GIT_PUSH_REMOTES=$DEV_GIT_PUSH_REMOTES")
+fi
 
 # Network profile
 case "$DEV_NETWORK" in

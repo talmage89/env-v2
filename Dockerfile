@@ -36,9 +36,7 @@ ENV CLAUDE_CONFIG_DIR=/home/dev/.claude
 RUN mkdir -p /home/dev/.claude /home/dev/.ssh \
     && chown -R dev:dev /home/dev/.claude /home/dev/.ssh
 
-COPY config/.gitconfig /home/dev/.gitconfig
-COPY config/.bash_aliases /home/dev/.bash_aliases
-COPY config/.scripts/ /home/dev/.scripts/
+COPY config/ /home/dev/
 
 RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/' /home/dev/.bashrc \
     && echo 'export EDITOR=hx' >> /home/dev/.bashrc \
